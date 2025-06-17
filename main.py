@@ -1,9 +1,9 @@
 import os
 import sys
-# DON'T CHANGE THIS !!!
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+# DON'T CHANGE THIS PATH
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from flask import Flask, send_from_directory
+from flask import Flask
 from flask_cors import CORS
 from src.models.user import db
 from src.routes.user import user_bp
@@ -12,47 +12,67 @@ from src.routes.matching import matching_bp
 from src.routes.scoring import scoring_bp
 from src.routes.insights import insights_bp
 from src.routes.monitoring import monitoring_bp
+from src.utils.error_handling import ErrorHandler
+import logging
 
-app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
-app.config['SECRET_KEY'] = 'pricing-intelligence-platform-secret-key-2024'
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
-# Enable CORS for all routes
-CORS(app, origins=['*'])
+def create_app():
+    """Application factory pattern"""
+    app = Flask(__name__)
+    
+    # Configuration
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pricing_intelligence.db'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
+    
+    # Initialize extensions
+    db.init_app(app)
+    CORS(app, origins="*")
+    
+    # Register error handlers
+    ErrorHandler.register_error_handlers(app)
+    
+    # Register blueprints
+    app.register_blueprint(user_bp, url_prefix='/api')
+    app.register_blueprint(ingestion_bp, url_prefix='/api')
+    app.register_blueprint(matching_bp, url_prefix='/api')
+    app.register_blueprint(scoring_bp, url_prefix='/api')
+    app.register_blueprint(insights_bp, url_prefix='/api')
+    app.register_blueprint(monitoring_bp, url_prefix='/api')
+    
+    # Create tables
+    with app.app_context():
+        try:
+            db.create_all()
+            logger.info("Database tables created successfully")
+        except Exception as e:
+            logger.error(f"Error creating database tables: {str(e)}")
+            raise
+    
+    # Health check endpoint
+    @app.route('/health')
+    def health_check():
+        return {
+            'status': 'healthy',
+            'service': 'pricing-intelligence-api',
+            'version': '1.0.0'
+        }
+    
+    return app
 
-# Register blueprints
-app.register_blueprint(user_bp, url_prefix='/api')
-app.register_blueprint(ingestion_bp, url_prefix='/api')
-app.register_blueprint(matching_bp, url_prefix='/api')
-app.register_blueprint(scoring_bp, url_prefix='/api')
-app.register_blueprint(insights_bp, url_prefix='/api')
-app.register_blueprint(monitoring_bp, url_prefix='/api')
-
-# Database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(os.path.dirname(__file__), 'database', 'app.db')}"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# Initialize database
-db.init_app(app)
-
-with app.app_context():
-    db.create_all()
-
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def serve(path):
-    static_folder_path = app.static_folder
-    if static_folder_path is None:
-            return "Static folder not configured", 404
-
-    if path != "" and os.path.exists(os.path.join(static_folder_path, path)):
-        return send_from_directory(static_folder_path, path)
-    else:
-        index_path = os.path.join(static_folder_path, 'index.html')
-        if os.path.exists(index_path):
-            return send_from_directory(static_folder_path, 'index.html')
-        else:
-            return "index.html not found", 404
-
+app = create_app()
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    try:
+        logger.info("Starting Pricing Intelligence Platform API")
+        app.run(host='0.0.0.0', port=5001, debug=True)
+    except Exception as e:
+        logger.error(f"Failed to start application: {str(e)}")
+        sys.exit(1)
+
