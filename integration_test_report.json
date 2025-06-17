@@ -1,0 +1,127 @@
+{
+  "summary": {
+    "total_tests": 10,
+    "passed": 10,
+    "failed": 0,
+    "success_rate": 100.0,
+    "duration_seconds": 0.085202,
+    "timestamp": "2025-06-16T21:39:23.336946"
+  },
+  "test_results": [
+    {
+      "test": "API Health Check",
+      "success": true,
+      "message": "API is responding",
+      "timestamp": "2025-06-16T21:39:23.258284",
+      "data": null
+    },
+    {
+      "test": "Data Ingestion Check",
+      "success": true,
+      "message": "Found 363 vehicles in database",
+      "timestamp": "2025-06-16T21:39:23.266534",
+      "data": {
+        "total_vehicles": 363
+      }
+    },
+    {
+      "test": "Vehicle Matching",
+      "success": true,
+      "message": "Found 5 matches for test vehicle",
+      "timestamp": "2025-06-16T21:39:23.278227",
+      "data": {
+        "match_count": 5,
+        "vin": "5NPEL4JA2LH042897"
+      }
+    },
+    {
+      "test": "Pricing Scoring",
+      "success": true,
+      "message": "Calculated score: 0.0 for test vehicle",
+      "timestamp": "2025-06-16T21:39:23.287005",
+      "data": {
+        "score": 0,
+        "vin": "5NPEL4JA2LH042897"
+      }
+    },
+    {
+      "test": "AI Insights Generation",
+      "success": true,
+      "message": "Generated AI insights for test vehicle",
+      "timestamp": "2025-06-16T21:39:23.292886",
+      "data": {
+        "has_insights": true,
+        "vin": "5NPEL4JA2LH042897"
+      }
+    },
+    {
+      "test": "Market Analysis",
+      "success": true,
+      "message": "Generated market insights",
+      "timestamp": "2025-06-16T21:39:23.297485",
+      "data": {
+        "has_market_insights": true
+      }
+    },
+    {
+      "test": "Analytics Endpoint",
+      "success": true,
+      "message": "Analytics endpoint working",
+      "timestamp": "2025-06-16T21:39:23.301862",
+      "data": null
+    },
+    {
+      "test": "Matching Statistics Endpoint",
+      "success": true,
+      "message": "Matching Statistics endpoint working",
+      "timestamp": "2025-06-16T21:39:23.306668",
+      "data": null
+    },
+    {
+      "test": "General Statistics Endpoint",
+      "success": true,
+      "message": "General Statistics endpoint working",
+      "timestamp": "2025-06-16T21:39:23.312609",
+      "data": null
+    },
+    {
+      "test": "Frontend Accessibility",
+      "success": true,
+      "message": "Frontend is accessible",
+      "timestamp": "2025-06-16T21:39:23.316824",
+      "data": null
+    },
+    {
+      "test": "CORS Configuration",
+      "success": true,
+      "message": "CORS header: http://localhost:5173",
+      "timestamp": "2025-06-16T21:39:23.318908",
+      "data": null
+    },
+    {
+      "test": "Performance Benchmarks",
+      "success": true,
+      "message": "Average response time: 6.0ms",
+      "timestamp": "2025-06-16T21:39:23.336889",
+      "data": {
+        "performance_results": [
+          {
+            "endpoint": "Stats",
+            "response_time_ms": 7.721900939941406,
+            "status_code": 200
+          },
+          {
+            "endpoint": "Analytics",
+            "response_time_ms": 4.741191864013672,
+            "status_code": 200
+          },
+          {
+            "endpoint": "Vehicle List",
+            "response_time_ms": 5.429983139038086,
+            "status_code": 200
+          }
+        ]
+      }
+    }
+  ]
+}
